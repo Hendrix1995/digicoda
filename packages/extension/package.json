@@ -1,0 +1,73 @@
+{
+  "name": "digicoda",
+  "displayName": "DigiCoda",
+  "description": "Digimon-themed virtual pet that grows with your coding (VS Code + Claude Code)",
+  "version": "0.1.0-dev",
+  "publisher": "hendrix",
+  "private": true,
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": ["Other"],
+  "main": "./dist/extension.js",
+  "activationEvents": ["onStartupFinished"],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "digicoda", "title": "DigiCoda", "icon": "$(person)" }
+      ]
+    },
+    "views": {
+      "digicoda": [
+        { "id": "digicoda.sidebar", "name": "Pet", "type": "webview" }
+      ]
+    },
+    "commands": [
+      { "command": "digicoda.showPanel",       "title": "DigiCoda: Show Panel" },
+      { "command": "digicoda.showSidebar",     "title": "DigiCoda: Show Sidebar" },
+      { "command": "digicoda.installHooks",    "title": "DigiCoda: Install Claude Code Hooks" },
+      { "command": "digicoda.uninstallHooks",  "title": "DigiCoda: Uninstall Claude Code Hooks" },
+      { "command": "digicoda.resetPet",        "title": "DigiCoda: Reset Pet (start new egg)" }
+    ],
+    "configuration": {
+      "title": "DigiCoda",
+      "properties": {
+        "digicoda.ui.primary": {
+          "type": "string",
+          "enum": ["panel", "sidebar"],
+          "default": "sidebar",
+          "description": "Primary pet display location"
+        },
+        "digicoda.ui.statusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show mini pet indicator in status bar"
+        },
+        "digicoda.notifications.evolveAlert": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notification when pet evolves"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "test": "echo 'extension tests run via vscode-test'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'extension: noop'",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@digicoda/core": "workspace:*",
+    "@digicoda/data": "workspace:*",
+    "chokidar": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.92.0",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.0",
+    "@vscode/vsce": "^3.0.0"
+  }
+}
