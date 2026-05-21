@@ -1,10 +1,10 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { createRequire } from 'node:module'
 import { reduce, DEFAULT_TUNABLES, type EvolutionRule, type PetState } from '@digicoda/core'
 import { loadState, saveState, readEventsSince, appendGraveyard } from './io.js'
 
-const require = createRequire(import.meta.url)
+// Use require (available in CJS context after esbuild transpilation)
+declare const require: any
 let cachedRules: EvolutionRule[] | null = null
 
 function loadEvolutionRules(): EvolutionRule[] {

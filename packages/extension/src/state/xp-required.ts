@@ -1,9 +1,9 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { createRequire } from 'node:module'
 import type { EvolutionRule, PetState } from '@digicoda/core'
 
-const require = createRequire(import.meta.url)
+// Use require (available in CJS context after esbuild transpilation)
+declare const require: any
 let cache: EvolutionRule[] | null = null
 
 function rules(): EvolutionRule[] {

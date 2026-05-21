@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import * as path from 'node:path'
-import { createRequire } from 'node:module'
 import type { PetState } from '@digicoda/core'
 import { renderWebviewHtml } from './webview-html.js'
 
-const require = createRequire(import.meta.url)
+// Use require (available in CJS context after esbuild transpilation)
+declare const require: any
 let current: vscode.WebviewPanel | null = null
 
 export function getSpritesRoot(): vscode.Uri {
