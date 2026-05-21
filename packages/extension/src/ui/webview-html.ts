@@ -141,7 +141,11 @@ export function renderWebviewHtml(opts: {
       sprite: null,        // digimonId, e.g. 'koromon'
       eggVariant: null,    // 1..N when stage is 'egg', drives egg sprite path
       isEgg: false,        // when true, pet does not walk and stays centered
+      flip: false,         // facing direction (visual), independent of movement
+      jumpTicks: 0,        // when > 0, pet is mid-jump (arc over JUMP_DURATION ticks)
     };
+    const JUMP_DURATION = 14;
+    const JUMP_HEIGHT = 18;
 
     const STAGE_W = () => document.getElementById('stage').clientWidth;
     const PET_W = ${petSize};
@@ -160,21 +164,35 @@ export function renderWebviewHtml(opts: {
         STATE.ticksLeft = 1000;
         return;
       }
+      // Facing direction is independent of movement direction — pet might walk
+      // forward, backward, or sidestep. Re-roll on every action change.
+      STATE.flip = Math.random() < 0.5;
       const r = Math.random();
       if (r < 0.85) {
         STATE.action = 'WALK';
-        // Bias direction toward whichever side the pet is further from, so it
-        // doesn't loiter on one half of the stage. 70% chance to head opposite,
-        // 30% chance to wander the same direction.
         const w = STAGE_W();
         const towardOpposite = STATE.x > w / 2 ? -1 : 1;
         STATE.dir = Math.random() < 0.7 ? towardOpposite : -towardOpposite;
-        // Mix of short trots and full traversals: 60–260 ticks = ~70–310px.
         STATE.ticksLeft = 60 + Math.floor(Math.random() * 200);
       } else {
         STATE.action = 'IDLE';
         STATE.ticksLeft = 15 + Math.floor(Math.random() * 25);
       }
+    }
+
+    function maybeStartJump() {
+      // ~0.6% per tick → ~one jump every 15 sec on average
+      if (STATE.jumpTicks === 0 && Math.random() < 0.006) {
+        STATE.jumpTicks = JUMP_DURATION;
+      }
+    }
+
+    function jumpOffset() {
+      if (STATE.jumpTicks <= 0) return 0;
+      const progress = (JUMP_DURATION - STATE.jumpTicks) / JUMP_DURATION;
+      STATE.jumpTicks--;
+      // Sin arc: 0 → JUMP_HEIGHT → 0
+      return Math.sin(Math.PI * progress) * JUMP_HEIGHT;
     }
 
     function tick() {
@@ -197,24 +215,26 @@ export function renderWebviewHtml(opts: {
         return;
       }
 
+      maybeStartJump();
+      const jy = jumpOffset();
+
       if (STATE.action === 'WALK') {
         STATE.x += STATE.dir * 1.2;
         if (STATE.x <= PET_W / 2) { STATE.x = PET_W / 2; STATE.dir = 1; }
         if (STATE.x >= w - PET_W / 2) { STATE.x = w - PET_W / 2; STATE.dir = -1; }
         pet.style.left = STATE.x + 'px';
-        pet.classList.toggle('flip', STATE.dir === -1);
-        // alternate walk/idle frames every 3 ticks for a bobbing walk
+        pet.classList.toggle('flip', STATE.flip);
         const useWalk = Math.floor(STATE.frame / 3) % 2 === 0;
         if (STATE.sprite) {
           const nextSrc = petUri(STATE.sprite, useWalk ? 'walk' : 'idle');
           if (pet.src !== nextSrc) pet.src = nextSrc;
         }
-        pet.style.bottom = (baseBottom + (useWalk ? 2 : 0)) + 'px';
+        pet.style.bottom = (baseBottom + (useWalk ? 2 : 0) + jy) + 'px';
       } else {
         pet.style.left = STATE.x + 'px';
-        // gentle idle bob every 8 ticks
+        pet.classList.toggle('flip', STATE.flip);
         const bob = Math.floor(STATE.frame / 8) % 2 === 0 ? 0 : 1;
-        pet.style.bottom = (baseBottom + bob) + 'px';
+        pet.style.bottom = (baseBottom + bob + jy) + 'px';
         if (STATE.sprite) {
           const idleSrc = petUri(STATE.sprite, 'idle');
           if (pet.src !== idleSrc) pet.src = idleSrc;
