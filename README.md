@@ -70,14 +70,24 @@ Reset anytime via Command Palette → **`DigiCoda: Reset Pet`**.
 
 ## Installation
 
-```bash
-# Replace with your editor's CLI path
-code --install-extension digicoda-0.1.0-dev.vsix --force
-```
+1. Download the latest `.vsix` from **[Releases](https://github.com/Hendrix1995/digicoda/releases/latest)**.
+2. Install via your editor's CLI:
 
-Or from the GUI: Extensions panel → `...` menu → **Install from VSIX**.
+   ```bash
+   # VS Code
+   code --install-extension digicoda-0.1.0-dev.vsix --force
 
-After install: **`Cmd+Shift+P` → `Developer: Reload Window`**.
+   # Cursor
+   cursor --install-extension digicoda-0.1.0-dev.vsix --force
+
+   # Antigravity IDE
+   "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" \
+     --install-extension digicoda-0.1.0-dev.vsix --force
+   ```
+
+   Or GUI: Extensions panel → `...` menu → **Install from VSIX**.
+
+3. **`Cmd+Shift+P` → `Developer: Reload Window`**.
 
 The pet lives in the **Explorer sidebar** as a compact `DigiCoda` section (no separate Activity Bar icon).
 
@@ -235,14 +245,24 @@ DigiCoda는 **활동 시간**과 **무활동 시간**을 같이 추적합니다:
 
 ## 설치
 
-```bash
-# 본인 에디터 CLI 경로로 바꿔서 실행
-code --install-extension digicoda-0.1.0-dev.vsix --force
-```
+1. **[Releases](https://github.com/Hendrix1995/digicoda/releases/latest)** 에서 최신 `.vsix` 다운로드.
+2. 본인 에디터의 CLI로 설치:
 
-또는 Extensions 패널 → `...` 메뉴 → **Install from VSIX**.
+   ```bash
+   # VS Code
+   code --install-extension digicoda-0.1.0-dev.vsix --force
 
-설치 후 **`Cmd+Shift+P` → `Developer: Reload Window`**.
+   # Cursor
+   cursor --install-extension digicoda-0.1.0-dev.vsix --force
+
+   # Antigravity IDE
+   "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" \
+     --install-extension digicoda-0.1.0-dev.vsix --force
+   ```
+
+   또는 GUI: Extensions 패널 → `...` 메뉴 → **Install from VSIX**.
+
+3. **`Cmd+Shift+P` → `Developer: Reload Window`**.
 
 펫은 **Explorer 사이드바**의 `DigiCoda` 섹션에 살아요 (Activity Bar에 별도 아이콘 없음).
 
