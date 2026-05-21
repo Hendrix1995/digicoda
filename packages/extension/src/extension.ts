@@ -1,6 +1,5 @@
 import * as vscode from 'vscode'
 import * as fs from 'node:fs'
-import * as path from 'node:path'
 import chokidar from 'chokidar'
 import { PATHS } from './state/paths.js'
 import { loadState, ensureDirs } from './state/io.js'
@@ -91,33 +90,15 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   )
 
-  // First-run: offer hook installation
-  if (isClaudeCodePresent() && !areHooksInstalled() && !isPromptSuppressed()) {
-    void promptHookInstall()
-  }
-}
-
-function isPromptSuppressed(): boolean {
-  return fs.existsSync(path.join(PATHS.hooksDir, '.suppress-prompt'))
-}
-
-async function promptHookInstall() {
-  const action = await vscode.window.showInformationMessage(
-    'DigiCoda can track Claude Code activity by installing 4 hooks in ~/.claude/settings.json. Install now?',
-    'Install',
-    'Later',
-    "Don't ask again",
-  )
-  if (action === 'Install') {
-    const res = installHooks()
-    if (res.installed) vscode.window.showInformationMessage('DigiCoda: Hooks installed.')
-    else vscode.window.showWarningMessage(`DigiCoda: ${res.reason ?? 'install failed'}`)
-  } else if (action === "Don't ask again") {
+  // Auto-install hooks whenever Claude Code is present and they're missing.
+  // Runs on every activation so externally-removed hooks self-heal silently.
+  if (isClaudeCodePresent() && !areHooksInstalled()) {
     try {
-      fs.mkdirSync(PATHS.hooksDir, { recursive: true })
-      fs.writeFileSync(path.join(PATHS.hooksDir, '.suppress-prompt'), '1')
+      const res = installHooks()
+      if (res.installed) console.log('[digicoda] Claude Code hooks auto-installed')
+      else console.warn('[digicoda] hook auto-install skipped:', res.reason)
     } catch (e) {
-      console.error('[digicoda] suppress-prompt write failed:', e)
+      console.error('[digicoda] hook auto-install failed:', e)
     }
   }
 }

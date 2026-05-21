@@ -1,0 +1,7 @@
+# Raw sprite drop folder — local only
+sprites/_raw/
+
+# Generated sprite frames — regenerated locally via scripts.
+# The placeholder generator recreates stand-ins on demand for anyone
+# cloning fresh; real sprites live on each contributor's machine.
+sprites/*/*.png

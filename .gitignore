@@ -12,6 +12,10 @@ out/
 # VS Code extension
 *.vsix
 .vscode-test/
+.vscode/
+# Generated extension assets (copied from project root / extracted from sprites)
+packages/extension/README.md
+packages/extension/icon.png
 
 # Brainstorming companion (auto-generated)
 .superpowers/

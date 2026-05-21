@@ -42,17 +42,18 @@ function densePromptStream(startTs: number, count: number, gapSec = 60): Activit
 }
 
 describe('scenario: dense coding 10h with light care', () => {
-  it('reaches adult stage with light branch', () => {
+  it('reaches child stage with light branch', () => {
     let state = initialState({ now: 1_000_000, petId: 'scenario-1' })
-    // 600 events × 60s gap = ~36000s of dense activity
-    // egg(300) + baby(3600) + child(28800) = 32700s 필요. 36000 > 32700 → adult 도달.
+    // Test uses 3 evolution rules (egg → koromon → agumon). The reducer's stage
+    // advance now inserts 'fresh' between egg and baby, so 3 evolutions land at
+    // stage='child' (egg→fresh→baby→child) with digimonId='greymon'/agumon-target.
     const events = densePromptStream(1_000_001, 600)
     state = reduce(state, events, {
       now: 1_000_000 + 36000,
       tunables: DEFAULT_TUNABLES,
       evolutionRules: rules,
     })
-    expect(state.stage).toBe('adult')
+    expect(state.stage).toBe('child')
   })
 })
 
@@ -60,30 +61,35 @@ describe('scenario: neglect → dark branch', () => {
   it('produces dark branch after 5+ care misses', () => {
     let state = initialState({ now: 1_000_000, petId: 'scenario-2' })
 
-    // Phase 1: dense child progression
+    // Phase 1: dense baby progression (egg→fresh→baby with the test's 3 rules)
     state = reduce(state, densePromptStream(1_000_001, 70), {
       now: 1_000_000 + 4200,
       tunables: DEFAULT_TUNABLES,
       evolutionRules: rules,
     })
-    expect(state.stage).toBe('child')
+    expect(state.stage).toBe('baby')
 
-    // Phase 2: 6 days of neglect → 6 care miss accrued in-stage
+    // Phase 2: enough idle windows to cross the 5-miss dark threshold without
+    // tipping over RIP_LIMIT (12). 6 windows = 6 misses.
+    const window = DEFAULT_TUNABLES.CARE_MISS_WINDOW_SEC
+    const phase2Now = 1_000_000 + 4200 + 6 * window
     state = reduce(state, [], {
-      now: 1_000_000 + 4200 + 6 * 86400,
+      now: phase2Now,
       tunables: DEFAULT_TUNABLES,
       evolutionRules: rules,
     })
     expect(state.careMiss.inStageCount).toBeGreaterThanOrEqual(5)
+    expect(state.rip).toBeUndefined()
 
-    // Phase 3: 9h dense coding → child(=agumon)→ adult(devimon, dark, careMiss=6)
-    const burstStart = 1_000_000 + 4200 + 6 * 86400 + 10
+    // Phase 3: 9h dense coding → agumon evolves to devimon (dark, careMiss≥5),
+    // stage advances to 'child' under the new fresh-aware tree.
+    const burstStart = phase2Now + 10
     state = reduce(state, densePromptStream(burstStart, 540), {
       now: burstStart + 32400,
       tunables: DEFAULT_TUNABLES,
       evolutionRules: rules,
     })
-    expect(state.stage).toBe('adult')
+    expect(state.stage).toBe('child')
     const lastEvo = state.evolutionHistory[state.evolutionHistory.length - 1]
     expect(lastEvo?.branch).toBe('dark')
     expect(lastEvo?.to).toBe('devimon')

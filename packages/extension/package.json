@@ -5,6 +5,11 @@
   "version": "0.1.0-dev",
   "publisher": "hendrix",
   "private": true,
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hendrix1995/digicoda.git"
+  },
   "engines": {
     "vscode": "^1.92.0"
   },
@@ -12,14 +17,9 @@
   "main": "./dist/extension.js",
   "activationEvents": ["onStartupFinished"],
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        { "id": "digicoda", "title": "DigiCoda", "icon": "$(person)" }
-      ]
-    },
     "views": {
-      "digicoda": [
-        { "id": "digicoda.sidebar", "name": "Pet", "type": "webview" }
+      "explorer": [
+        { "id": "digicoda.sidebar", "name": "DigiCoda", "type": "webview" }
       ]
     },
     "commands": [

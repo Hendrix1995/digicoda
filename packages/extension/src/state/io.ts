@@ -1,8 +1,12 @@
 import * as fs from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import type { ActivityEvent, DigicodaConfig, PetState } from '@digicoda/core'
-import { initialState } from '@digicoda/core'
+import { initialState, PET_PERSONALITIES } from '@digicoda/core'
 import { PATHS } from './paths.js'
+
+function randomPersonality() {
+  return PET_PERSONALITIES[Math.floor(Math.random() * PET_PERSONALITIES.length)]
+}
 
 export function ensureDirs(): void {
   fs.mkdirSync(PATHS.dir, { recursive: true })
@@ -13,15 +17,39 @@ export function ensureDirs(): void {
 export function loadState(): PetState {
   ensureDirs()
   if (!fs.existsSync(PATHS.state)) {
-    const fresh = initialState({ now: Math.floor(Date.now() / 1000), petId: randomUUID() })
+    const fresh = initialState({
+      now: Math.floor(Date.now() / 1000),
+      petId: randomUUID(),
+      seedEggVariant: 1 + Math.floor(Math.random() * 11),
+      personality: randomPersonality(),
+    })
     saveState(fresh)
     return fresh
   }
   try {
-    return JSON.parse(fs.readFileSync(PATHS.state, 'utf-8')) as PetState
+    const loaded = JSON.parse(fs.readFileSync(PATHS.state, 'utf-8')) as PetState
+    let dirty = false
+    // Back-fill seedEggVariant for pre-feature pets still in egg stage so they
+    // hatch into one of the three lineages instead of always 'koromon'.
+    if (loaded.stage === 'egg' && loaded.seedEggVariant == null) {
+      loaded.seedEggVariant = 1 + Math.floor(Math.random() * 11)
+      dirty = true
+    }
+    // Back-fill personality so the next evolution gets variant from the trait.
+    if (loaded.personality == null) {
+      loaded.personality = randomPersonality()
+      dirty = true
+    }
+    if (dirty) saveState(loaded)
+    return loaded
   } catch (e) {
     console.error('[digicoda] state.json corrupted, regenerating:', e)
-    const fresh = initialState({ now: Math.floor(Date.now() / 1000), petId: randomUUID() })
+    const fresh = initialState({
+      now: Math.floor(Date.now() / 1000),
+      petId: randomUUID(),
+      seedEggVariant: 1 + Math.floor(Math.random() * 11),
+      personality: randomPersonality(),
+    })
     saveState(fresh)
     return fresh
   }

@@ -1,6 +1,7 @@
 import type {
   ActivityEvent,
   EvolutionRule,
+  PetPersonality,
   PetState,
   Tunables,
 } from './types.js'
@@ -11,13 +12,17 @@ import { isReadyToEvolve, matchBranch, nextStage } from './evolution.js'
 export type InitArgs = {
   now: number
   petId: string
+  seedEggVariant?: number
+  personality?: PetPersonality
 }
 
-export function initialState({ now, petId }: InitArgs): PetState {
+export function initialState({ now, petId, seedEggVariant, personality }: InitArgs): PetState {
   return {
     schemaVersion: 1,
     petId,
     bornAt: now,
+    ...(seedEggVariant != null ? { seedEggVariant } : {}),
+    ...(personality != null ? { personality } : {}),
     digimonId: 'egg',
     stage: 'egg',
     xp: { totalActiveSec: 0, inStageActiveSec: 0 },
@@ -26,6 +31,50 @@ export function initialState({ now, petId }: InitArgs): PetState {
     lastReducedEventTs: 0,
     evolutionHistory: [],
   }
+}
+
+// Personality biases the effective careMiss when matching evolution branches.
+// Negative = light bias (gentler outcomes), positive = dark bias.
+const PERSONALITY_OFFSET: Record<PetPersonality, number> = {
+  holy:     -2,
+  gentle:   -1,
+  calm:      0,
+  mischief: +1,
+  savage:   +2,
+}
+
+export function applyPersonalityOffset(careMiss: number, personality: PetPersonality | undefined): number {
+  if (!personality) return careMiss
+  return Math.max(0, careMiss + (PERSONALITY_OFFSET[personality] ?? 0))
+}
+
+// FNV-1a-based seeded RNG. Same pet+evolution-index → same [0,1) value, so the
+// reducer stays pure and tests don't need a TEST_TUNABLES escape hatch — every
+// pet's luck is its own fixed fate.
+export function seededRandom(seed: string): number {
+  let h = 2166136261 >>> 0
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i)
+    h = Math.imul(h, 16777619) >>> 0
+  }
+  return h / 0x100000000
+}
+
+// Egg variant (1..N) → Fresh (Baby I) digimon that hatches from it.
+// Round-robin across three lineages so variant fate is stable.
+//   Lineage A: Botamon → Koromon → Agumon → Greymon → MetalGreymon
+//   Lineage B: Kuramon → Tsunomon → Gabumon → Garurumon → WereGarurumon
+//   Lineage C: Poyomon → Tokomon → Patamon → Angemon → MagnaAngemon
+const EGG_LINEAGE: Record<number, string> = {
+  1: 'botamon', 2: 'kuramon', 3: 'poyomon',
+  4: 'botamon', 5: 'kuramon', 6: 'poyomon',
+  7: 'botamon', 8: 'kuramon', 9: 'poyomon',
+  10: 'botamon', 11: 'kuramon',
+}
+
+export function freshForEggVariant(variant: number | undefined): string | undefined {
+  if (variant == null) return undefined
+  return EGG_LINEAGE[variant]
 }
 
 export type ReduceArgs = {
@@ -90,10 +139,29 @@ export function reduce(
   }
 
   // 4. Evolution check (loop to handle overflow across multiple stages)
-  while (!next.rip && next.stage !== 'perfect') {
+  while (!next.rip && next.stage !== 'mega') {
     const rule = evolutionRules.find((r) => r.from === next.digimonId)
     if (!rule || !isReadyToEvolve(rule, next.xp.inStageActiveSec)) break
-    const branch = matchBranch(rule, next.careMiss.inStageCount)
+
+    const effectiveCareMiss = applyPersonalityOffset(next.careMiss.inStageCount, next.personality)
+    let branch = matchBranch(rule, effectiveCareMiss)
+
+    // Lucky roll: small chance to swap to a different branch entirely. Skips
+    // when the rule's branches all share the same `to` (no real alternative).
+    // Uses pet-state-seeded RNG so the result is fixed for a given pet+stage
+    // rather than re-rolling each time the reducer runs.
+    const distinctBranches = rule.branches.filter((b) => b.to !== branch.to)
+    const luckSeed = `${next.petId}:luck:${next.evolutionHistory.length}`
+    if (distinctBranches.length > 0 && seededRandom(luckSeed) < tunables.LUCKY_ROLL_CHANCE) {
+      const altSeed = `${next.petId}:luck-alt:${next.evolutionHistory.length}`
+      const idx = Math.floor(seededRandom(altSeed) * distinctBranches.length)
+      branch = distinctBranches[idx] ?? branch
+    }
+
+    // For the initial egg→fresh step, the egg variant deterministically picks
+    // the lineage, overriding careMiss/personality/lucky-roll branching.
+    const to = (next.digimonId === 'egg' && freshForEggVariant(next.seedEggVariant))
+      || branch.to
     next = {
       ...next,
       evolutionHistory: [
@@ -101,12 +169,12 @@ export function reduce(
         {
           at: now,
           from: next.digimonId,
-          to: branch.to,
+          to,
           careMissAtEvolve: next.careMiss.inStageCount,
           branch: branch.branch,
         },
       ],
-      digimonId: branch.to,
+      digimonId: to,
       stage: nextStage(next.stage),
       xp: {
         ...next.xp,

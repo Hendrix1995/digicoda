@@ -63,7 +63,9 @@ describe('reduce', () => {
     const events: ActivityEvent[] = []
     for (let i = 0; i < 20; i++) events.push(ev(1000 + i * 60))
     const s1 = reduce(s0, events, { now: 2500, tunables: DEFAULT_TUNABLES, evolutionRules })
-    expect(s1.stage).toBe('baby')
+    // Egg now hatches into Fresh (Baby I). Local test rule names 'koromon' as
+    // the destination for simplicity; reducer doesn't validate stage/digimonId pairing.
+    expect(s1.stage).toBe('fresh')
     expect(s1.digimonId).toBe('koromon')
     expect(s1.evolutionHistory.length).toBe(1)
     // 잉여 XP는 다음 스테이지로 이월: 1140 - 300(egg threshold) = 840
@@ -78,9 +80,10 @@ describe('reduce', () => {
       tunables: DEFAULT_TUNABLES,
       evolutionRules,
     })
-    // Now jump 2 days ahead with no events
+    // Jump 2 care-windows ahead with no events → should accrue exactly 2 misses.
+    const window = DEFAULT_TUNABLES.CARE_MISS_WINDOW_SEC
     const s2 = reduce(s1, [], {
-      now: 1000 + 2 * 86400,
+      now: 1000 + 2 * window,
       tunables: DEFAULT_TUNABLES,
       evolutionRules,
     })

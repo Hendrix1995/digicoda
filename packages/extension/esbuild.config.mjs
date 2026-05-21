@@ -38,6 +38,14 @@ function copyData() {
   )
   // Recursively copy sprites/
   copyDir(path.join(dataRoot, 'sprites'), destSprites)
+
+  // Pull the project-root README so vsce picks it up for the Extensions panel.
+  const rootReadme = path.join(__dirname, '..', '..', 'README.md')
+  const extReadme = path.join(__dirname, 'README.md')
+  if (fs.existsSync(rootReadme)) {
+    fs.copyFileSync(rootReadme, extReadme)
+  }
+
   console.log('[digicoda] copied data files into dist/')
 }
 

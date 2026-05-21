@@ -20,6 +20,8 @@ export function matchBranch(rule: EvolutionRule, careMissCount: number): Evoluti
 export function nextStage(stage: Stage): Stage {
   switch (stage) {
     case 'egg':
+      return 'fresh'
+    case 'fresh':
       return 'baby'
     case 'baby':
       return 'child'
@@ -28,6 +30,8 @@ export function nextStage(stage: Stage): Stage {
     case 'adult':
       return 'perfect'
     case 'perfect':
-      return 'perfect'
+      return 'mega'
+    case 'mega':
+      return 'mega'
   }
 }
