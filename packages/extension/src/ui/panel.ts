@@ -3,14 +3,11 @@ import * as path from 'node:path'
 import type { PetState } from '@digicoda/core'
 import { renderWebviewHtml } from './webview-html.js'
 
-// Use require (available in CJS context after esbuild transpilation)
-declare const require: any
 let current: vscode.WebviewPanel | null = null
 
 export function getSpritesRoot(): vscode.Uri {
-  // @digicoda/data is a workspace dep, resolve its package root.
-  const dataPkg = require.resolve('@digicoda/data/package.json')
-  return vscode.Uri.file(path.join(path.dirname(dataPkg), 'sprites'))
+  // dist/sprites/ contains the copied sprite assets
+  return vscode.Uri.file(path.join(__dirname, 'sprites'))
 }
 
 export function showPanel(_context: vscode.ExtensionContext, initialState: PetState): vscode.WebviewPanel {

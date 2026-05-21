@@ -1,6 +1,7 @@
 src/
 out/
 tsconfig.json
+tsconfig.tsbuildinfo
 esbuild.config.mjs
 **/*.map
 **/*.test.ts

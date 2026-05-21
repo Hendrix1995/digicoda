@@ -2,16 +2,13 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import type { EvolutionRule, PetState } from '@digicoda/core'
 
-// Use require (available in CJS context after esbuild transpilation)
-declare const require: any
 let cache: EvolutionRule[] | null = null
 
 function rules(): EvolutionRule[] {
   if (cache) return cache
-  const dataPkg = require.resolve('@digicoda/data/package.json')
-  cache = JSON.parse(
-    fs.readFileSync(path.join(path.dirname(dataPkg), 'evolution.json'), 'utf-8'),
-  ) as EvolutionRule[]
+  // At runtime, __dirname points to the dist/ directory where evolution.json was copied.
+  const rulesPath = path.join(__dirname, 'data', 'evolution.json')
+  cache = JSON.parse(fs.readFileSync(rulesPath, 'utf-8')) as EvolutionRule[]
   return cache
 }
 

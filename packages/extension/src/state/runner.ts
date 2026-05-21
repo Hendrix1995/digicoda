@@ -3,16 +3,12 @@ import * as path from 'node:path'
 import { reduce, DEFAULT_TUNABLES, type EvolutionRule, type PetState } from '@digicoda/core'
 import { loadState, saveState, readEventsSince, appendGraveyard } from './io.js'
 
-// Use require (available in CJS context after esbuild transpilation)
-declare const require: any
 let cachedRules: EvolutionRule[] | null = null
 
 function loadEvolutionRules(): EvolutionRule[] {
   if (cachedRules) return cachedRules
-  // Resolve evolution.json from @digicoda/data
-  const dataPkg = require.resolve('@digicoda/data/package.json')
-  const dataRoot = path.dirname(dataPkg)
-  const rulesPath = path.join(dataRoot, 'evolution.json')
+  // At runtime, __dirname points to the dist/ directory where evolution.json was copied.
+  const rulesPath = path.join(__dirname, 'data', 'evolution.json')
   cachedRules = JSON.parse(fs.readFileSync(rulesPath, 'utf-8')) as EvolutionRule[]
   return cachedRules
 }
