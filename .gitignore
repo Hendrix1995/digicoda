@@ -1,0 +1,21 @@
+# Node
+node_modules/
+.pnpm-store/
+*.log
+.DS_Store
+
+# Build
+dist/
+out/
+*.tsbuildinfo
+
+# VS Code extension
+*.vsix
+.vscode-test/
+
+# Brainstorming companion (auto-generated)
+.superpowers/
+
+# Local environment
+.env
+.env.local
