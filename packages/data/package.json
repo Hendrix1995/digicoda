@@ -1,0 +1,12 @@
+{
+  "name": "@digicoda/data",
+  "version": "0.1.0-dev",
+  "private": true,
+  "files": ["roster.json", "evolution.json", "sprites/"],
+  "scripts": {
+    "build": "node scripts/generate-placeholder-sprites.mjs",
+    "test": "echo 'data: no tests'",
+    "typecheck": "echo 'data: no typecheck'",
+    "lint": "echo 'data: noop'"
+  }
+}

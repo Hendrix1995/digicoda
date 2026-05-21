@@ -1,0 +1,83 @@
+[
+  {
+    "from": "egg",
+    "xpRequiredSec": 300,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 0,   "to": "koromon"   },
+      { "branch": "standard", "careMissMin": 1, "careMissMax": 998, "to": "tsunomon"  },
+      { "branch": "dark",     "careMissMin": 999,"careMissMax": 999,"to": "tokomon"   }
+    ]
+  },
+  {
+    "from": "koromon",
+    "xpRequiredSec": 3600,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 1,   "to": "patamon" },
+      { "branch": "standard", "careMissMin": 2, "careMissMax": 999, "to": "agumon"  },
+      { "branch": "dark",     "careMissMin": 999,"careMissMax": 999,"to": "agumon"  }
+    ]
+  },
+  {
+    "from": "tsunomon",
+    "xpRequiredSec": 3600,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 1,   "to": "gabumon" },
+      { "branch": "standard", "careMissMin": 2, "careMissMax": 999, "to": "gabumon" },
+      { "branch": "dark",     "careMissMin": 999,"careMissMax": 999,"to": "gabumon" }
+    ]
+  },
+  {
+    "from": "tokomon",
+    "xpRequiredSec": 3600,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 999, "to": "patamon" },
+      { "branch": "standard", "careMissMin": 999,"careMissMax": 999,"to": "patamon" },
+      { "branch": "dark",     "careMissMin": 999,"careMissMax": 999,"to": "patamon" }
+    ]
+  },
+  {
+    "from": "agumon",
+    "xpRequiredSec": 28800,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 1,   "to": "angemon" },
+      { "branch": "standard", "careMissMin": 2, "careMissMax": 4,   "to": "greymon" },
+      { "branch": "dark",     "careMissMin": 5, "careMissMax": 999, "to": "devimon" }
+    ]
+  },
+  {
+    "from": "gabumon",
+    "xpRequiredSec": 28800,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 1,   "to": "weregarurumon" },
+      { "branch": "standard", "careMissMin": 2, "careMissMax": 4,   "to": "garurumon"     },
+      { "branch": "dark",     "careMissMin": 5, "careMissMax": 999, "to": "skullgreymon"  }
+    ]
+  },
+  {
+    "from": "patamon",
+    "xpRequiredSec": 28800,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 1,   "to": "angemon" },
+      { "branch": "standard", "careMissMin": 2, "careMissMax": 4,   "to": "angemon" },
+      { "branch": "dark",     "careMissMin": 5, "careMissMax": 999, "to": "devimon" }
+    ]
+  },
+  {
+    "from": "greymon",
+    "xpRequiredSec": 86400,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 1,   "to": "metalgreymon" },
+      { "branch": "standard", "careMissMin": 2, "careMissMax": 999, "to": "metalgreymon" },
+      { "branch": "dark",     "careMissMin": 999,"careMissMax": 999,"to": "metalgreymon" }
+    ]
+  },
+  {
+    "from": "angemon",
+    "xpRequiredSec": 86400,
+    "branches": [
+      { "branch": "light",    "careMissMin": 0, "careMissMax": 999, "to": "magnaangemon" },
+      { "branch": "standard", "careMissMin": 999,"careMissMax": 999,"to": "magnaangemon" },
+      { "branch": "dark",     "careMissMin": 999,"careMissMax": 999,"to": "magnaangemon" }
+    ]
+  }
+]

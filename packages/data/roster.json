@@ -1,0 +1,17 @@
+[
+  { "id": "egg",          "name": "Digi Egg",      "stage": "egg",     "sprite": { "idle": "egg/idle.png" } },
+  { "id": "koromon",      "name": "Koromon",       "stage": "baby",    "sprite": { "idle": "koromon/idle.png", "walk": "koromon/walk.png" } },
+  { "id": "tsunomon",     "name": "Tsunomon",      "stage": "baby",    "sprite": { "idle": "tsunomon/idle.png", "walk": "tsunomon/walk.png" } },
+  { "id": "tokomon",      "name": "Tokomon",       "stage": "baby",    "sprite": { "idle": "tokomon/idle.png", "walk": "tokomon/walk.png" } },
+  { "id": "agumon",       "name": "Agumon",        "stage": "child",   "sprite": { "idle": "agumon/idle.png", "walk": "agumon/walk.png", "happy": "agumon/happy.png", "sad": "agumon/sad.png", "sleep": "agumon/sleep.png" }, "attribute": "vaccine" },
+  { "id": "gabumon",      "name": "Gabumon",       "stage": "child",   "sprite": { "idle": "gabumon/idle.png", "walk": "gabumon/walk.png", "happy": "gabumon/happy.png", "sad": "gabumon/sad.png", "sleep": "gabumon/sleep.png" }, "attribute": "data" },
+  { "id": "patamon",      "name": "Patamon",       "stage": "child",   "sprite": { "idle": "patamon/idle.png", "walk": "patamon/walk.png", "happy": "patamon/happy.png", "sad": "patamon/sad.png", "sleep": "patamon/sleep.png" }, "attribute": "vaccine" },
+  { "id": "greymon",      "name": "Greymon",       "stage": "adult",   "sprite": { "idle": "greymon/idle.png", "walk": "greymon/walk.png" }, "attribute": "vaccine" },
+  { "id": "garurumon",    "name": "Garurumon",     "stage": "adult",   "sprite": { "idle": "garurumon/idle.png", "walk": "garurumon/walk.png" }, "attribute": "data" },
+  { "id": "angemon",      "name": "Angemon",       "stage": "adult",   "sprite": { "idle": "angemon/idle.png", "walk": "angemon/walk.png" }, "attribute": "vaccine" },
+  { "id": "devimon",      "name": "Devimon",       "stage": "adult",   "sprite": { "idle": "devimon/idle.png", "walk": "devimon/walk.png" }, "attribute": "virus" },
+  { "id": "skullgreymon", "name": "SkullGreymon",  "stage": "adult",   "sprite": { "idle": "skullgreymon/idle.png", "walk": "skullgreymon/walk.png" }, "attribute": "virus" },
+  { "id": "weregarurumon","name": "WereGarurumon", "stage": "adult",   "sprite": { "idle": "weregarurumon/idle.png", "walk": "weregarurumon/walk.png" }, "attribute": "vaccine" },
+  { "id": "metalgreymon", "name": "MetalGreymon",  "stage": "perfect", "sprite": { "idle": "metalgreymon/idle.png", "walk": "metalgreymon/walk.png" }, "attribute": "vaccine" },
+  { "id": "magnaangemon", "name": "MagnaAngemon",  "stage": "perfect", "sprite": { "idle": "magnaangemon/idle.png", "walk": "magnaangemon/walk.png" }, "attribute": "vaccine" }
+]
